@@ -23,20 +23,3 @@ CREATE EXTERNAL TABLE IF NOT EXISTS yellowtaxi.tripdata (
 )
 STORED AS ORC
 LOCATION '/user/hive/yellowtaxi';
-
-
-		avrodf.select("tpep_pickup_datetime", "tpep_dropoff_datetime", "trip_time_m")
-		.write.format("com.hortonworks.spark.sql.hive.llap.HiveWarehouseConnector").option("table", tempTable).save()
-		
-		
-val df = spark.sql("select tpep_pickup_datetime, tpep_dropoff_datetime, (bigint(to_timestamp(tpep_dropoff_datetime)) - bigint(to_timestamp(tpep_pickup_datetime))) /60 as trip_time_m, passenger_count, trip_distance, RatecodeID, store_and_fwd_flag, PULocationID, DOLocationID, payment_type, fare_amount, extra, mta_tax, tip_amount, tolls_amount, improvement_surcharge, total_amount, congestion_surcharge, load_ts, VendorID from lenta ")
-
-
-df.write.format("com.hortonworks.spark.sql.hive.llap.HiveWarehouseConnector").mode("overwrite").option("table", "tripdata").save()
-		
-		
-		sql("SELECT ws_sold_time_sk, ws_ship_date_sk FROM web_sales WHERE ws_sold_time_sk > 80000)
-.write.format(HIVE_WAREHOUSE_CONNECTOR)
-.mode("append")
-.option("table", "newTable")
-.save()
